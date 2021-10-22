@@ -3,6 +3,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 	id 'net.researchgate.release' version '2.8.1'
+
 }
 
 group = 'com.springgradle'
@@ -20,4 +21,18 @@ dependencies {
 
 test {
 	useJUnitPlatform()
+}
+
+release {
+	failOnCommitNeeded = false
+	failOnUpdateNeeded = false
+	versionPropertyFile = 'gradle.properties'
+	pushReleaseVersionBranch = false
+	newVersionCommitMessage = 'New version commit: '
+	preTagCommitMessage = 'pre tag commit: '
+	git {
+		requireBranch = ''
+		pushToRemote = ''
+		pushToBranchPrefix = ''
+	}
 }
