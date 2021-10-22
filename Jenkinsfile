@@ -38,7 +38,17 @@ pipeline {
                 echo "Deploying QA-${artifact}-${version}-${commitID}-${env.BUILD_NUMBER}"
 
                 sshagent(credentials: ['e45c738f-4214-4296-96a0-e53307dab985']) {
-                    sh "git log --oneline"
+                    sh "git reset --hard origin/master"
+
+                    // update the versions
+                    sh "./gradlew release -Prelease.useAutomaticVersion=true -Prelease.releaseVersion= -Prelease.newVersion=${version}-SNAPSHOT"
+
+                    // push the tag
+                    echo "Tagging Release ${version}"
+                    sh "git push --tags"
+
+                    // update the master branch
+                    sh "git push origin HEAD:master"
                 }
             }
         }
