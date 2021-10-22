@@ -28,11 +28,11 @@ pipeline {
         }
 
         stage('Deploy QA') {
-//            when {
-//                expression {
-//                    return isReleaseBuild()
-//                }
-//            }
+           when {
+               expression {
+                   return isReleaseBuild()
+               }
+           }
 
             steps {
                 echo "Deploying QA-${artifact}-${version}-${commitID}-${env.BUILD_NUMBER}"
@@ -42,7 +42,7 @@ pipeline {
                     sh "git reset --hard origin/master"
 
                     // update the versions
-                    sh "./gradlew release -Prelease.useAutomaticVersion=true -Prelease.releaseVersion=${version} -Prelease.newVersion=0.0.4-SNAPSHOT"
+                    sh "./gradlew release -Prelease.useAutomaticVersion=true -Prelease.releaseVersion=${version} -Prelease.newVersion=0.0.5-SNAPSHOT"
 
                     // push the tag
                     echo "Tagging Release ${version}"
