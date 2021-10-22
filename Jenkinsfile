@@ -28,11 +28,11 @@ pipeline {
         }
 
         stage('Deploy QA') {
-            when {
-                expression {
-                    return isReleaseBuild()
-                }
-            }
+//            when {
+//                expression {
+//                    return isReleaseBuild()
+//                }
+//            }
 
             steps {
                 echo "Deploying QA-${artifact}-${version}-${commitID}-${env.BUILD_NUMBER}"
