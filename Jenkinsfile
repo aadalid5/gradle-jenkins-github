@@ -37,7 +37,8 @@ pipeline {
             steps {
                 echo "Deploying QA-${artifact}-${version}-${commitID}-${env.BUILD_NUMBER}"
 
-                sshagent(credentials: ['e45c738f-4214-4296-96a0-e53307dab985']) {
+                //sshagent(credentials: ['e45c738f-4214-4296-96a0-e53307dab985']) {  //pc
+                sshagent(credentials: ['jenkins-id-test']) {   //mac
                     sh "git reset --hard origin/master"
 
                     // update the versions
