@@ -18,9 +18,8 @@ pipeline {
             steps {
                 sh "echo 'Build...' "
                 sh "whoami"
-                sh "pwd"
                 sh "cat /etc/*release"
-                sh "./gradlew clean"
+                sh "echo ${version}"
                 sshagent(credentials: ['e45c738f-4214-4296-96a0-e53307dab985']) {
                     sh "git config --list "
                 }
