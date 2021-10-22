@@ -41,7 +41,7 @@ pipeline {
                     sh "git reset --hard origin/master"
 
                     // update the versions
-                    sh "./gradlew release -Prelease.useAutomaticVersion=true -Prelease.releaseVersion= -Prelease.newVersion=${version}-SNAPSHOT"
+                    sh "./gradlew release -Prelease.useAutomaticVersion=true -Prelease.releaseVersion=${version} -Prelease.newVersion=0.0.3-SNAPSHOT"
 
                     // push the tag
                     echo "Tagging Release ${version}"
