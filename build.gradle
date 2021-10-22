@@ -3,6 +3,10 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 	id 'net.researchgate.release' version '2.8.1'
+	id 'checkstyle'
+	id 'jacoco'
+	id "org.sonarqube" version "3.2.0"
+	id "name.remal.sonarlint" version "1.2.2"
 
 }
 
@@ -19,8 +23,82 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-test {
-	useJUnitPlatform()
+
+
+checkstyle {
+	ignoreFailures = false
+	maxWarnings = 0
+}
+
+jacocoTestReport {
+	dependsOn test // tests are required to run before generating the report
+	afterEvaluate {
+		excludedClassFilesForReport(classDirectories)
+	}
+	reports {
+		xml.enabled = true
+		csv.enabled = false
+	}
+}
+
+jacoco {
+	toolVersion = "0.8.6"
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				minimum = 0.8
+			}
+		}
+	}
+	afterEvaluate {
+		excludedClassFilesForReport(classDirectories)
+	}
+}
+
+task getVersion() {
+	description 'Provides build version info for tagging images (required by Jenkinsfile)'
+	doLast{print version}
+}
+
+bootRun {
+	systemProperties = System.properties
+}
+
+//do not create 2 jars (snapshot-plain.jar)
+jar {
+	enabled = false
+}
+
+private excludedClassFilesForReport(classDirectories) {
+	classDirectories.setFrom(files(classDirectories.files.collect {
+		fileTree(dir: it,
+				exclude: [
+						'org/hbr/userapi/domain/user/config/**',
+						'org/hbr/userapi/UserApiApplication.class',
+						'org/hbr/userapi/web/RestResponsePage.class'
+				]
+		)
+	}))
+}
+
+check.dependsOn jacocoTestCoverageVerification
+tasks['sonarqube'].dependsOn test
+
+sonarqube {
+	properties {
+		if (file('$project.buildDir/jacoco/test.exec').exists())
+			property 'sonar.jacoco.reportPath', '$project.buildDir/jacoco/test.exec'
+	}
+}
+
+sonarlint {
+	excludes {
+		source '**/*IntegrationTest.java'
+	}
+
 }
 
 release {
@@ -28,8 +106,8 @@ release {
 	failOnUpdateNeeded = false
 	versionPropertyFile = 'gradle.properties'
 	pushReleaseVersionBranch = false
-	newVersionCommitMessage = 'New version commit: '
-	preTagCommitMessage = 'pre tag commit: '
+	newVersionCommitMessage = 'Prepare for next development iteration: '
+	preTagCommitMessage = 'Release tag: '
 	git {
 		requireBranch = ''
 		pushToRemote = ''
